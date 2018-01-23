@@ -1,0 +1,74 @@
+<resources>
+    <string name="app_name">STI iLSVote</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="title_activity_splash1">Splash1</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="title_activity_login">LoginActivity</string>
+
+    <item name="visible" type="id" />
+    <item name="masked" type="id" />
+
+    <string name="section_promptmes">Choose your section...</string>
+    <string name="menu_search">Search anything..</string>
+
+    <string-array name="section_codes">
+        <item>ABM201</item>
+        <item>ABM202</item>
+        <item>ABM203</item>
+        <item>ABM204</item>
+        <item>ABM205</item>
+        <item>ABM206</item>
+        <item>ABM207</item>
+        <item>ABM208</item>
+        <item>CCT201</item>
+        <item>CCT202</item>
+        <item>CULART201</item>
+        <item>CULART202</item>
+        <item>CULART203</item>
+        <item>CULART204</item>
+        <item>GAS201</item>
+        <item>HOP201</item>
+        <item>HUMMS201</item>
+        <item>HUMMS202</item>
+        <item>IT101</item>
+        <item>IT102</item>
+        <item>IT103</item>
+        <item>IT104</item>
+        <item>IT105</item>
+        <item>IT106</item>
+        <item>IT201</item>
+        <item>IT202</item>
+        <item>IT203</item>
+        <item>IT204</item>
+        <item>IT205</item>
+        <item>IT206</item>
+        <item>IT207</item>
+        <item>IT208</item>
+        <item>IT209</item>
+        <item>IT210</item>
+        <item>RBO201</item>
+        <item>RBO202</item>
+        <item>STEM201</item>
+        <item>STEM202</item>
+        <item>STEM203</item>
+        <item>STEM204</item>
+        <item>STEM205</item>
+        <item>STEM206</item>
+        <item>TOP101</item>
+        <item>TOP102</item>
+        <item>TOP103</item>
+        <item>TOP201</item>
+        <item>TOP202</item>
+        <item>TOP203</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

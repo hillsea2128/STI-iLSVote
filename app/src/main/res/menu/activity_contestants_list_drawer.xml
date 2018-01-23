@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_participants"
+            android:icon="@drawable/ic_view_list_black_24dp"
+            android:title="Contestant List" />
+
+
+    </group>
+
+    <item android:title="Account">
+        <menu>
+            <item
+                android:id="@+id/nav_info"
+                android:icon="@drawable/ic_assignment_ind_black_24dp"
+                android:title="My Info" />
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@drawable/ic_logout1"
+                android:title="Logout" />
+
+        </menu>
+    </item>
+
+    <item android:title="About">
+        <menu>
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_info_outline_black_24dp"
+            android:title="About us" />
+
+        </menu>
+    </item>
+
+</menu>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/holo_blue_light"
+    android:layout_margin="5dp"
+    android:weightSum="1">
+
+    <ImageView
+        android:id="@+id/imghold"
+        android:layout_width="192dp"
+        android:layout_height="127dp"
+        android:layout_marginEnd="10dp"
+        app:srcCompat="@mipmap/ic_mainlauncher" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/ttproj"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="project-title"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <TextView
+            android:id="@+id/txtSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="project-section"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/txtProjDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="project-desc"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+    </LinearLayout>
+
+</LinearLayout>

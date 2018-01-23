@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ilsvote.edu.sti.stiilsvote">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_mainlauncher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_mainlauncher"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".ContestantsListActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".SplashOne"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="Login | STI iLSVote" />
+        <activity
+            android:name=".ContestantDisplayAct"
+            android:label="Contestant Name"
+            android:parentActivityName=".ContestantsListActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ContestantsListActivity" />
+        </activity>
+        <activity
+            android:name=".AccountInfo"
+            android:label="My Account"
+            android:parentActivityName=".ContestantsListActivity">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ContestantsListActivity" />
+        </activity>
+
+        <service
+            android:name=".OnClearFromRecentService"
+            android:stopWithTask="false" />
+
+    </application>
+
+</manifest>
