@@ -8,8 +8,10 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +22,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -85,13 +89,14 @@ public class Tab1Fragment extends Fragment {
         }
 
     }
-
+    View lnEmpty;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_tab1, container, false);
         listmoto = (ListView) view.findViewById(R.id.mainListView);
+        lnEmpty = (LinearLayout) view.findViewById(R.id.emptyViewList);
         swiperTheFox = (SwipeRefreshLayout) view.findViewById(R.id.swiperTheFox);
         swiperTheFox.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -135,11 +140,11 @@ public class Tab1Fragment extends Fragment {
     public void onResume() {
         super.onResume();
         mData = sGetDataInterface.getDataList();
-        if(sGetDataInterface != null){
+        if(sGetDataInterface != null && mData != null) {
             listmoto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Contestants cont2 = mData.get(position);
+                    Contestants cont2 = filteredData.get(position);
 
                     Animation animation1 = new AlphaAnimation(0.5f, 1.0f);
                     animation1.setDuration(500);
@@ -151,11 +156,14 @@ public class Tab1Fragment extends Fragment {
                     intent.putExtra("PROJECT_DESC", cont2.proj_desc);
                     intent.putExtra("PROJECT_ID", cont2.proj_ID);
                     intent.putExtra("PROJECT_BYTES", cont2.raw_img);
-                    startActivity(intent);
+                    startActivityForResult(intent,0);
                 }
             });
             puteverythingtolistview();
-
+            lnEmpty.setVisibility(View.GONE);
+        } else {
+            lnEmpty.setVisibility(View.VISIBLE);
+            listmoto.setEmptyView(lnEmpty);
         }
     }
 
@@ -249,55 +257,48 @@ public class Tab1Fragment extends Fragment {
 
         void onFragmentInteraction(Uri uri);
     }
-
+    private List<Contestants>filteredData = null;
     public class ContestantAdapter2 extends ArrayAdapter<Contestants> {
 
+        private ValueFilter mFilter = new ValueFilter();
 
         public ContestantAdapter2(Context context, List<Contestants> objects) {
             super(context, 0, objects);
+            filteredData = mData;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = getActivity().getLayoutInflater().inflate(R.layout.panibagongbuhaypangalawa, parent, false);
+            try {
+                if (convertView == null) {
+                    convertView = getActivity().getLayoutInflater().inflate(R.layout.panibagongbuhaypangalawa, parent, false);
+                }
+
+                TextView txtProjName = (TextView)convertView.findViewById(R.id.ttproj);
+                TextView txtProjDesc  = (TextView)convertView.findViewById(R.id.txtProjDesc);
+                TextView txtSection  = (TextView)convertView.findViewById(R.id.txtSection);
+                ImageView img = (ImageView) convertView.findViewById(R.id.imghold);
+
+                final Contestants contestants1 = filteredData.get(position);
+
+                txtProjName.setText(contestants1.proj_title);
+                txtProjDesc.setText(contestants1.getlistviewdesc());
+                txtSection.setText(contestants1.getProjGroupSec());
+                //img.setImageBitmap(loadImage_thumb(contestants1.raw_img));
+                new loadImageParaDiLag(img).execute(contestants1.raw_img);
+                Animation animation = AnimationUtils
+                        .loadAnimation(getActivity(), R.anim.kaliwakananhaa);
+                convertView.startAnimation(animation);
+
+            } catch (Exception e) {
+                Log.i("ERROR POPULATION","LISTVIEW ERROR IN POPULATING DUE TO "+ e.getMessage());
             }
-
-            TextView txtProjName = (TextView)convertView.findViewById(R.id.ttproj);
-            TextView txtProjDesc  = (TextView)convertView.findViewById(R.id.txtProjDesc);
-            TextView txtSection  = (TextView)convertView.findViewById(R.id.txtSection);
-            ImageView img = (ImageView) convertView.findViewById(R.id.imghold);
-
-            final Contestants contestants1 = mData.get(position);
-
-            txtProjName.setText(contestants1.proj_title);
-            txtProjDesc.setText(contestants1.getlistviewdesc());
-            txtSection.setText(contestants1.getProjGroupSec());
-            //img.setImageBitmap(loadImage_thumb(contestants1.raw_img));
-            new loadImageParaDiLag(img).execute(contestants1.raw_img);
-            Animation animation = AnimationUtils
-                    .loadAnimation(getActivity(), R.anim.kaliwakananhaa);
-            convertView.startAnimation(animation);
             return convertView;
         }
 
-        public void filter(String charText) {
-            charText = charText.toLowerCase(Locale.getDefault());
-            if (charText.length() == 0) {
-                mData.clear();
-                mData.addAll(mData);
-            } else {
-                for(Iterator<Contestants> itr = mData.iterator(); itr.hasNext();){
-                    Contestants sst = itr.next();
-
-                    if (sst.class_sect.toLowerCase(Locale.getDefault())
-                            .contains(charText)) {
-                        mData.clear();
-                        mData.add(sst);
-                    }
-                }
-            }
-            notifyDataSetChanged();
+        @NonNull
+        public Filter getFilter() {
+            return mFilter;
         }
 
         private class ValueFilter extends Filter {
@@ -305,21 +306,27 @@ public class Tab1Fragment extends Fragment {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults results = new FilterResults();
-
+                final List<Contestants> list = mData;
+                Log.i("filtered ",constraint.toString().toLowerCase());
+                int count = list.size();
                 if (constraint != null && constraint.length() > 0) {
-                    ArrayList<Contestants> filterList = new ArrayList<Contestants>();
-                    for (int i = 0; i < mData.size(); i++) {
-                        if ((mData.get(i).class_sect.toLowerCase()).contains(constraint.toString().toLowerCase())) {
-
-                            Contestants babydata = new Contestants(mData.get(i).proj_title,mData.get(i).class_sect,mData.get(i).proj_desc,mData.get(i).raw_img,mData.get(i).proj_ID,mData.get(i).proj_group);
+                    ArrayList<Contestants> filterList = new ArrayList<Contestants>(count);
+                    for (int i = 0; i < list.size(); i++) {
+                        if ((list.get(i).class_sect.toLowerCase()).contains(constraint.toString().toLowerCase())  ||  (list.get(i).proj_title.toLowerCase()).contains(constraint.toString().toLowerCase())  ||  (list.get(i).proj_group.toLowerCase()).contains(constraint.toString().toLowerCase())) {
+                            Contestants babydata = new Contestants(list.get(i).proj_title,list.get(i).class_sect,list.get(i).proj_desc,list.get(i).raw_img,list.get(i).proj_ID,list.get(i).proj_group);
                             filterList.add(babydata);
+                        } else {
+
                         }
+                    }
+                    if (filterList.size() <=0) {
+                        Toast.makeText(getActivity(),"No results found.",Toast.LENGTH_SHORT).show();
                     }
                     results.count = filterList.size();
                     results.values = filterList;
                 } else {
-                    results.count = mData.size();
-                    results.values = mData;
+                    results.count = list.size();
+                    results.values = list;
                 }
                 return results;
 
@@ -328,11 +335,13 @@ public class Tab1Fragment extends Fragment {
             @Override
             protected void publishResults(CharSequence constraint,
                                           FilterResults results) {
-                mData = (ArrayList<Contestants>) results.values;
+                filteredData = (ArrayList<Contestants>) results.values;
                 notifyDataSetChanged();
             }
 
 
         }
+
+
     }
 }

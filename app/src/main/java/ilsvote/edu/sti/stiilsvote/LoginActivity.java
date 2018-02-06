@@ -23,6 +23,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -64,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        ImageView imageSTILOGO = (ImageView) findViewById(R.id.imageView3);
         btnLogin = (Button) findViewById(R.id.btnLogin);
         studNum = (TextInputLayout) findViewById(R.id.studNum);
         studCode = (TextInputLayout) findViewById(R.id.studCode);
@@ -76,19 +77,24 @@ public class LoginActivity extends AppCompatActivity {
 
                 if(studNum != null && studCode !=null) {
                     if (mayNetKaBa() == true) {
-
                         runall();
                     } else {
                         createAlert("No Connection", "You have no present internet connection. Please connect to your local STI WiFi or on your mobile data.");
                     }
                 } else {
-
                     createAlert("Empty Fields!", "Please put something!");
                 }
-
-
             }
         });
+        imageSTILOGO.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),AboutActivity.class);
+                startActivityForResult(intent, 0);
+                return true;
+            }
+        });
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();

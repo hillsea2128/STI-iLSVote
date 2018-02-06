@@ -1,23 +1,55 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:gravity="center"
     tools:context="ilsvote.edu.sti.stiilsvote.Tab1Fragment">
 
     <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:id="@+id/emptyViewList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="150dp"
+        android:orientation="horizontal">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:layout_width="wrap_content"
-        android:id="@+id/swiperTheFox"
-        android:layout_weight="1"
-        android:layout_height="wrap_content">
-    <ListView
-        android:id="@+id/mainListView"
+        <TextView
+            android:id="@+id/textView323"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Entry list was empty due to some errors. \n Please refresh the list by swiping down or clicking that upper right button and hitting refresh."
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/hihe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1.66"
-        tools:layout_editor_absoluteX="8dp"
-        tools:layout_editor_absoluteY="8dp" />
-    </android.support.v4.widget.SwipeRefreshLayout>
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_alignParentTop="true">
 
-</FrameLayout>
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swiperTheFox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <ListView
+                android:id="@+id/mainListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1.66"
+                tools:layout_editor_absoluteX="8dp"
+                tools:layout_editor_absoluteY="8dp" />
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </LinearLayout>
+</RelativeLayout>

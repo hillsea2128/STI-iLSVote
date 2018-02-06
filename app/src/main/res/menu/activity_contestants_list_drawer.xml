@@ -5,17 +5,26 @@
         <item
             android:id="@+id/nav_participants"
             android:icon="@drawable/ic_view_list_black_24dp"
-            android:title="Contestant List" />
-
+            android:title="Entries List" />
+        <item
+            android:id="@+id/nav_info"
+            android:icon="@drawable/ic_assignment_ind_black_24dp"
+            android:title="My Info" />
 
     </group>
+    <item android:title="Entries">
+        <menu>
 
+            <item
+                android:id="@+id/nav_refresh"
+                android:icon="@drawable/ic_refresh"
+                android:title="Refresh" />
+
+        </menu>
+    </item>
     <item android:title="Account">
         <menu>
-            <item
-                android:id="@+id/nav_info"
-                android:icon="@drawable/ic_assignment_ind_black_24dp"
-                android:title="My Info" />
+
             <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/ic_logout1"

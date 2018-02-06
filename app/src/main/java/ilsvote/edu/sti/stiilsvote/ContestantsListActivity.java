@@ -79,6 +79,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ContestantsListActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,Tab1Fragment.OnFragmentInteractionListener,Tab2Fragment.OnFragmentInteractionListener, Tab1Fragment.GetDataInterface, Tab1Fragment.GetStudentBoto, Tab1Fragment.GetStudentNumbah {
@@ -103,6 +105,7 @@ public class ContestantsListActivity extends AppCompatActivity
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
 
     }
+    NavigationView navigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,7 +120,7 @@ public class ContestantsListActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.getMenu().getItem(0).setChecked(true);
         listmoto = (ListView) findViewById(R.id.mainListView);
@@ -130,11 +133,12 @@ public class ContestantsListActivity extends AppCompatActivity
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("No Internet Connection!");
             builder.setMessage("Hi, " + studname + "! \n You are previously logged in but you don't have any internet connectivity. Plesae connect to your local STI WiFi or to your mobile data and try again.");
-            builder.setPositiveButton("Ah, Sige", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
 
                 public void onClick(DialogInterface dialog, int which) {
 
-                    exitApp();
+                    //exitApp();
+                    TabsSetup_EmptyVersion();
                 }
             });
 
@@ -188,10 +192,12 @@ public static void minusVotesCount(Integer intToAdd) {
                                                                case 0: {
                                                                    //((Tab1Fragment) fragment).refreshT();
                                                                    ab.setSubtitle(studname);
+                                                                   navigationView.getMenu().getItem(0).setChecked(true);
                                                                    break;
                                                                }
                                                                case 1: {
                                                                    ab.setSubtitle(null);
+                                                                   navigationView.getMenu().getItem(1).setChecked(true);
                                                                    if (((Tab2Fragment) fragment).task != null) {
 
                                                                        if(((Tab2Fragment) fragment).task.getStatus() == AsyncTask.Status.RUNNING) {
@@ -222,6 +228,32 @@ public static void minusVotesCount(Integer intToAdd) {
                                                        }
 
                                                    });
+    }
+    public void TabsSetup_EmptyVersion() {
+        try {
+            contestantsList.clear();
+            mainContestants.clear();
+        } catch(Exception e) {
+
+        }
+
+        tabLayout =
+                (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.removeAllTabs();
+        tabLayout.addTab(tabLayout.newTab().setText("List"));
+
+        viewPager =
+                (ViewPager) findViewById(R.id.pager);
+        reserbaLang = new TabPagerAdapter
+                (getSupportFragmentManager(),
+                        tabLayout.getTabCount());
+        viewPager.setAdapter(reserbaLang);
+        tabLayout.setTabTextColors(
+                ContextCompat.getColor(getApplicationContext(), android.R.color.white),
+                ContextCompat.getColor(getApplicationContext(), R.color.colorAccent)
+        );
+        viewPager.addOnPageChangeListener(new
+                TabLayout.TabLayoutOnPageChangeListener(tabLayout));
     }
 
     private void actionBarSetup() {
@@ -260,12 +292,11 @@ public static void minusVotesCount(Integer intToAdd) {
 
     }
     void CallSearchingMethod(String toSquery) {
-
-        Fragment activeFragment = reserbaLang.getItem(1);
-        if (((Tab2Fragment)activeFragment).adapterr2 != null) {
-            ((Tab2Fragment)activeFragment).adapterr2.getFilter().filter(toSquery);
+        Fragment activeFragment = reserbaLang.getRegisteredFragment(0);
+        if (((Tab1Fragment)activeFragment).adapterr2 != null) {
+            ((Tab1Fragment)activeFragment).adapterr2.getFilter().filter(toSquery);
         } else {
-
+            Log.i("ERROR SEARCH","NULL SEARCH, " + toSquery);
         }
 
     }
@@ -282,7 +313,7 @@ public static void minusVotesCount(Integer intToAdd) {
         builder1.setCancelable(true);
 
         builder1.setPositiveButton(
-                "Ah, Sige",
+                "Okay",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
@@ -358,6 +389,14 @@ public static void minusVotesCount(Integer intToAdd) {
             }
         }
     }
+    public void CancelRefreshVisual() {
+        Fragment activeFragment = reserbaLang.getItem(0);
+        if (((Tab1Fragment)activeFragment).swiperTheFox != null) {
+            ((Tab1Fragment)activeFragment).swiperTheFox.setRefreshing(false);
+        } else {
+
+        }
+    }
     public static String saveImage(final Context context, final String imageData, final String sigStr) throws IOException {
         final byte[] imgBytesData = android.util.Base64.decode(imageData,
                 android.util.Base64.DEFAULT);
@@ -415,7 +454,7 @@ public static void minusVotesCount(Integer intToAdd) {
         } catch (FileNotFoundException e) {}
         return null;
     }
-
+    Integer uiInt;
     void puteverythingtolistview() {
         adapterr2 = new ContestantAdapter2(this, mainContestants);
         listmoto.setAdapter(adapterr2);
@@ -425,154 +464,166 @@ public static void minusVotesCount(Integer intToAdd) {
     HttpResponse response;
     public AsyncTask<Void, String, Void> task;
     void execute_http_things(final Boolean withDialog) {
+if (mayNetKaBa()) {
+    task = new AsyncTask<Void, String, Void>() {
 
-        task = new AsyncTask<Void, String, Void>() {
+        @Override
+        protected void onPreExecute() {
+            try {
+                clearListView();
+                httpGet.abort();
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+            if(withDialog) {
+                pd = new ProgressDialog(ContestantsListActivity.this);
+                pd.setTitle("Refreshing entries...");
+                pd.setMessage("Please wait...");
+                pd.setCancelable(false);
+                pd.setIndeterminate(true);
+                pd.show();
 
-            @Override
-            protected void onPreExecute() {
-                try {
-                    clearListView();
-                    httpGet.abort();
-                } catch(Exception e) {
-                    e.printStackTrace();
-                }
-                if(withDialog) {
-                    pd = new ProgressDialog(ContestantsListActivity.this);
-                    pd.setTitle("Refreshing contestant lists...");
-                    pd.setMessage("Please wait...");
-                    pd.setCancelable(false);
-                    pd.setIndeterminate(true);
-                    pd.show();
-
-                } else {
-
-                }
+            } else {
 
             }
 
+        }
 
-            Handler mHandler = new Handler();
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    if (task.getStatus() == AsyncTask.Status.RUNNING || task.getStatus() == AsyncTask.Status.PENDING) {
-                        task.cancel(true);
-                        try {
-                            pd.dismiss();
-                        } catch (Exception e) {
-                            Log.i("HOY","WALANG PROGRESS DIALOG");
-                        }
 
-                        createAlert("Lost connection","We have lost our connection to our servers. Please connect to your local STI WiFi or on your strong mobile data.");
-                        //swiperthefox.setRefreshing(false);
-                    }
-                }
-            };
-
+        Handler mHandler = new Handler();
+        Runnable runnable = new Runnable() {
             @Override
-            protected Void doInBackground(Void... arg0) {
-                try {
-                    mHandler.postDelayed(runnable, 60000);
-                    String urlmoto = "http://ilsvote.azurewebsites.net/product";
-                    InputStream inputStream = null;
-                    String result= null;
-                    client = new DefaultHttpClient();
-                    httpGet = new HttpGet(urlmoto);
-                    publishProgress("Trying to get response from our servers...");
-                    response = client.execute(httpGet);
-                    publishProgress("Fetching contestants data...");
-                    inputStream = response.getEntity().getContent();
-                    Log.i("ASASASASASa","DONW0");
-                    if(inputStream != null){
-                        Log.i("ASASASASASa","DONW1");
-                        try{
-                            BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
-                            String line = "";
-                            String resulttt = "";
-                            while((line = bufferedReader.readLine()) != null) {
-                                resulttt += line;
-                            }
-                            inputStream.close();
-                            httpGet.abort();
-                            final JSONArray jarray = new JSONArray(resulttt);
-                            Log.i("ASASASASASa","DONW2");
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    for (iyay = 0; iyay < jarray.length(); iyay++) {
-                                        publishProgress("Loading contestant ID " + Integer.toString(iyay));
-                                        try {
-                                            JSONObject jsonChildNode = jarray.getJSONObject(iyay);
-
-                                            String img_shortcut = jsonChildNode.getString("product_image");
-                                            String naaaaaaame = jsonChildNode.getString("product_name");
-                                            String uniqueID = naaaaaaame.replaceAll(" ","_");
-                                            contestantsList.add(new Contestants(naaaaaaame, jsonChildNode.getString("product_section"), jsonChildNode.getString("product_description"), saveImage(getApplicationContext(),img_shortcut,uniqueID), Integer.toString(iyay), jsonChildNode.getString("product_group_name")));
-
-                                        } catch(JSONException | IOException e) {
-                                            e.printStackTrace();
-                                        }
-
-                                    }
-                                    mainContestants = contestantsList;
-                                    TabsSetup();
-                                    loggerThing = "weGoodBruh";
-                                }
-                            });
-
-                        }catch(Exception e){
-                            Log.i("App", "MAY ERROR: " +e.getMessage());
-                            loggerThing = "NoGoodInputParsingDataBruh";
-                        }
-                    } else {
-                        loggerThing = "noDataAccessBruh";
-                    }
-
-                } catch (UnknownHostException e2) {
-                    loggerThing = "noDataAccessBruh";
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-
-                }
-                return null;
-            }
-
-            @Override
-            protected void onProgressUpdate(String... progress) {
-                super.onProgressUpdate(progress);
-                pd.setMessage("Please wait... \n"+ progress[0]);
-            }
-            @Override
-            protected void onPostExecute(Void result) {
-                if (withDialog) {
-                    if (pd!=null) {
+            public void run() {
+                if (task.getStatus() == AsyncTask.Status.RUNNING || task.getStatus() == AsyncTask.Status.PENDING) {
+                    task.cancel(true);
+                    try {
                         pd.dismiss();
+                    } catch (Exception e) {
+                        Log.i("HOY","WALANG PROGRESS DIALOG");
                     }
-                    Fragment activeFragment = reserbaLang.getItem(0);
-                    if (((Tab1Fragment)activeFragment).swiperTheFox != null) {
-                        ((Tab1Fragment)activeFragment).swiperTheFox.setRefreshing(false);
-                    } else {
 
-                    }
+                    createAlert("Lost connection","We have lost our connection to our servers. Please connect to your local STI WiFi or on your strong mobile data.");
                     //swiperthefox.setRefreshing(false);
-                } else {
-                   // swiperthefox.setRefreshing(false);
-                }
-
-                if (Objects.equals(loggerThing, "DataMismatchBruh")) {
-                    createAlert("Error", "Student No. / Access code incorrect. Check your credentials and try again.");
-                } else if (Objects.equals(loggerThing, "NoGoodInputParsingDataBruh")) {
-                    createAlert("Error!","Something is not right. Please try again.");
-                } else if (Objects.equals(loggerThing, "noDataAccessBruh")) {
-                    createAlert("No Connection", "You have no present internet connection. Please connect to your local STI WiFi or on your mobile data.");
-                } else if (Objects.equals(loggerThing, "weGoodBruh")) {
-
                 }
             }
-
         };
-        task.execute((Void[])null);
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            try {
+                mHandler.postDelayed(runnable, 60000);
+                String urlmoto = "http://ilsvote.azurewebsites.net/product";
+                InputStream inputStream = null;
+                String result= null;
+                client = new DefaultHttpClient();
+                httpGet = new HttpGet(urlmoto);
+                publishProgress("Contacting servers...");
+                response = client.execute(httpGet);
+                publishProgress("Fetching entries...");
+                inputStream = response.getEntity().getContent();
+                Log.i("ASASASASASa","DONW0");
+                if(inputStream != null){
+                    Log.i("ASASASASASa","DONW1");
+                    try{
+                        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+                        String line = "";
+                        String resulttt = "";
+                        while((line = bufferedReader.readLine()) != null) {
+                            resulttt += line;
+                        }
+                        inputStream.close();
+                        httpGet.abort();
+                        final JSONArray jarray = new JSONArray(resulttt);
+                        Log.i("ASASASASASa","DONW2");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for (iyay = 0; iyay < jarray.length(); iyay++) {
+                                    try {
+                                        JSONObject jsonChildNode = jarray.getJSONObject(iyay);
+                                        String img_shortcut = jsonChildNode.getString("product_image");
+                                        String naaaaaaame = jsonChildNode.getString("product_name");
+                                        String uniqueID = naaaaaaame.replaceAll(" ","_");
+                                        contestantsList.add(new Contestants(naaaaaaame, jsonChildNode.getString("product_section"), jsonChildNode.getString("product_description"), saveImage(getApplicationContext(),img_shortcut,uniqueID), Integer.toString(iyay), jsonChildNode.getString("product_group_name")));
+
+                                    } catch(JSONException | IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                mainContestants = contestantsList;
+                                TabsSetup();
+                                loggerThing = "weGoodBruh";
+                            }
+                        });
+                    }catch(Exception e){
+                        Log.i("App", "MAY ERROR: " +e.getMessage());
+                        loggerThing = "NoGoodInputParsingDataBruh";
+                    }
+                } else {
+                    loggerThing = "noDataAccessBruh";
+                }
+
+            } catch (UnknownHostException e2) {
+                loggerThing = "noDataAccessBruh";
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... progress) {
+            super.onProgressUpdate(progress);
+            pd.setMessage("Please wait... \n"+ progress[0]);
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            if (withDialog) {
+                if (pd!=null) {
+                    pd.dismiss();
+                }
+
+                //swiperthefox.setRefreshing(false);
+            } else {
+                // swiperthefox.setRefreshing(false);
+            }
+            uiInt = 0;
+            if (Objects.equals(loggerThing, "DataMismatchBruh")) {
+                createAlert("Error", "Student No. / Access code incorrect. Check your credentials and try again.");
+                TabsSetup_EmptyVersion();
+            } else if (Objects.equals(loggerThing, "NoGoodInputParsingDataBruh")) {
+                createAlert("Error!","Something is not right. Please try again.");
+                TabsSetup_EmptyVersion();
+            } else if (Objects.equals(loggerThing, "noDataAccessBruh")) {
+                createAlert("No Connection", "You have no present internet connection. Please connect to your local STI WiFi or on your mobile data.");
+                TabsSetup_EmptyVersion();
+            } else if (Objects.equals(loggerThing, "weGoodBruh")) {
+
+            }
+            CancelRefreshVisual();
+        }
+
+    };
+    task.execute((Void[])null);
+} else {
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    builder.setTitle("No Internet Connection!");
+    builder.setMessage("Hi, " + studname + "! \n You are previously logged in but you don't have any internet connectivity. Plesae connect to your local STI WiFi or to your mobile data and try again.");
+    builder.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+
+        public void onClick(DialogInterface dialog, int which) {
+
+            //exitApp();
+            TabsSetup_EmptyVersion();
+        }
+    });
+
+    AlertDialog alert = builder.create();
+    alert.show();
+}
+
     }
     public class ContestantAdapter2 extends ArrayAdapter<Contestants> {
 
@@ -794,13 +845,45 @@ void log_out_user() {
         int id = item.getItemId();
 
         if (id == R.id.nav_participants) {
-
+            TabLayout.Tab tab = tabLayout.getTabAt(0);
+            tab.select();
         } else if (id == R.id.nav_info) {
+            try {
+                TabLayout.Tab tab = tabLayout.getTabAt(1);
+                tab.select();
+            } catch(Exception ex) {
+                navigationView.getMenu().getItem(0).setChecked(true);
+                Toast.makeText(this,"Your account info was not available due to some errors. Please refresh.",Toast.LENGTH_LONG).show();
+            }
 
         } else if (id == R.id.nav_about) {
-
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivityForResult(intent,0);
         } else if (id == R.id.nav_logout) {
             log_out_user();
+        } else if (id == R.id.nav_refresh) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setTitle("Confirm");
+            builder.setMessage("Do you want to refresh the list?");
+
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    execute_http_things(true);
+                }
+            });
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
