@@ -260,7 +260,7 @@ public class Tab2Fragment extends Fragment {
                     protected Void doInBackground(Void... arg0) {
                         try {
                             mHandler.postDelayed(runnable, 60000);
-                            String urlmoto = "http://ilsvote.azurewebsites.net/student/get-votes/" + studNo;
+                            String urlmoto = "youarenotallowedtoacceasthis.url";
                             InputStream inputStream = null;
                             String result= null;
                             client = new DefaultHttpClient();
