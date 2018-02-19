@@ -512,7 +512,7 @@ if (mayNetKaBa()) {
         protected Void doInBackground(Void... arg0) {
             try {
                 mHandler.postDelayed(runnable, 60000);
-                String urlmoto = "http://ilsvote.azurewebsites.net/product";
+                String urlmoto = "youarenotallowedtoaccessthis.url";
                 InputStream inputStream = null;
                 String result= null;
                 client = new DefaultHttpClient();
