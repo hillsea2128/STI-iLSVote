@@ -2,6 +2,7 @@
 
 ###LOG Changes: 
 1. [02/06/'18, 8:03PM] [APP] [SQL, Node.JS]
+--*[02/19/'18] Fixed button bugs
 --*Fully Working search function (filters out the searched item on the top)
 --*Handler timeout now properly resets
 --*Abort operation of ```HTTPPost``` recognized by ```onPostExecute()``` AsyncTask class
