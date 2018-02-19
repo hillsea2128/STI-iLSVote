@@ -270,7 +270,7 @@ void doPostThatYeah() {
     HttpResponse response ;
     private void postText(){
         try{
-            String postReceiverUrl = "http://ilsvote.azurewebsites.net/vote?student_number=0" + student_number + "&product_id=" + project_ID;
+            String postURL = "youarenotallowedtoaccessthis.url";
             Log.v("hey", "postURL: " + postReceiverUrl);
             httpClient = new DefaultHttpClient();
             httpPost = new HttpPost(postReceiverUrl);
