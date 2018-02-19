@@ -189,7 +189,7 @@ public void saveSettings_RememberLogin(String name, String studno, String studco
         String studno_URL = studNum.getEditText().getText().toString();
         String studcode_URL = studCode.getEditText().getText().toString();
         String studsec_URL = spinme1.getSelectedItem().toString();
-        String urlmoto = "http://ilsvote.azurewebsites.net/student/" + studno_URL;
+        String urrlmoto = "youarenotallowedtoacesathis.url";
         InputStream inputStream = null;
         String result= null;
         if (Objects.equals(studno_URL, "") || Objects.equals(studcode_URL, "")) {
